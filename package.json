@@ -1,0 +1,32 @@
+{
+  "name": "educourse",
+  "version": "1.0.0",
+  "description": "",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "nodemon src/index.js",
+    "build": "node src/index.js"
+  },
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "nodemon": "latest",
+    "prisma": "^5.18.0"
+  },
+  "dependencies": {
+    "@prisma/client": "^5.18.0",
+    "bcrypt": "^5.1.1",
+    "cors": "latest",
+    "dotenv": "latest",
+    "express": "latest",
+    "jsonwebtoken": "^9.0.2",
+    "nodemailer": "^6.9.14",
+    "uuid": "^10.0.0",
+    "zod": "^3.23.8"
+  }
+}

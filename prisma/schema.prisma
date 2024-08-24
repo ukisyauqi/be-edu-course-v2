@@ -1,0 +1,151 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id                Int        @id @default(autoincrement())
+  fullname          String
+  username          String
+  password          String
+  email             String     @unique
+  verificationToken String?
+  createdAt         DateTime   @default(now())
+  updatedAt         DateTime   @updatedAt
+  MyCourses         MyCourse[]
+  Orders            Order[]
+  Payments          Payment[]
+  Reviews           Review[]
+}
+
+model CourseCategory {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  Courses     Course[]
+}
+
+model Tutor {
+  id      Int      @id @default(autoincrement())
+  name    String
+  email   String   @unique
+  bio     String?
+  Courses Course[]
+}
+
+model Course {
+  id          Int            @id @default(autoincrement())
+  name        String
+  description String
+  categoryId  Int
+  tutorId     Int
+  createdAt   DateTime       @default(now())
+  updatedAt   DateTime       @updatedAt
+  Category    CourseCategory @relation(fields: [categoryId], references: [id])
+  Tutor       Tutor          @relation(fields: [tutorId], references: [id])
+  Modules     CourseModule[]
+  MyCourses   MyCourse[]
+  Pretests    Pretest[]
+  Orders      Order[]
+  Reviews     Review[]
+}
+
+model MyCourse {
+  id             Int      @id @default(autoincrement())
+  userId         Int
+  courseId       Int
+  enrollmentDate DateTime @default(now())
+  User           User     @relation(fields: [userId], references: [id])
+  Course         Course   @relation(fields: [courseId], references: [id])
+}
+
+model CourseModule {
+  id          Int        @id @default(autoincrement())
+  courseId    Int
+  title       String
+  description String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  Course      Course     @relation(fields: [courseId], references: [id])
+  Materials   Material[]
+}
+
+model Material {
+  id        Int          @id @default(autoincrement())
+  moduleId  Int
+  type      MaterialType
+  content   String
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @updatedAt
+  Module    CourseModule @relation(fields: [moduleId], references: [id])
+}
+
+model Pretest {
+  id        Int      @id @default(autoincrement())
+  courseId  Int
+  question  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Course    Course   @relation(fields: [courseId], references: [id])
+}
+
+model Payment {
+  id          Int           @id @default(autoincrement())
+  userId      Int
+  amount      Decimal
+  paymentDate DateTime      @default(now())
+  method      PaymentMethod
+  User        User          @relation(fields: [userId], references: [id])
+}
+
+model Order {
+  id        Int         @id @default(autoincrement())
+  userId    Int
+  courseId  Int
+  amount    Decimal
+  status    OrderStatus
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  User      User        @relation(fields: [userId], references: [id])
+  Course    Course      @relation(fields: [courseId], references: [id])
+}
+
+model Review {
+  id        Int      @id @default(autoincrement())
+  courseId  Int
+  userId    Int
+  rating    Int
+  comment   String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  Course    Course   @relation(fields: [courseId], references: [id])
+  User      User     @relation(fields: [userId], references: [id])
+}
+
+enum MaterialType {
+  summary
+  video
+  quiz
+}
+
+enum PaymentMethod {
+  credit_card
+  bank_transfer
+  e_wallet
+}
+
+enum OrderStatus {
+  pending
+  paid
+  canceled
+}
