@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { login, register } from "../services/auth.js"
+import { login, register, verifyEmail } from "../services/auth.js"
 
 const registerSchema = z.object({
   fullname: z
@@ -38,6 +38,21 @@ export async function registerController(req, res) {
     )
     const user = await register(fullname, username, password, email)
     res.send(user)
+  } catch (error) {
+    res.status(400).send(error)
+  }
+}
+
+export async function verifyEmailController(req, res) {
+  try {
+    const { token } = req.query
+    const result = await verifyEmail(token)
+
+    if (!result.success) {
+      return res.status(400).send(result.message)
+    }
+
+    res.send(result.message)
   } catch (error) {
     res.status(400).send(error)
   }

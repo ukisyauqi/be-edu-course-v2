@@ -6,8 +6,14 @@ import {
   getCoursesController,
   updateCourseController,
 } from "../controllers/course.js"
-import { loginController, registerController } from "../controllers/auth.js"
+import {
+  loginController,
+  registerController,
+  verifyEmailController,
+} from "../controllers/auth.js"
 import { authMiddleware } from "../middlewares/auth.js"
+import upload from "../middlewares/upload.js"
+import { uploadController } from "../controllers/upload.js"
 
 const router = Router()
 
@@ -24,5 +30,9 @@ router.delete("/courses/:id", authMiddleware, deleteCourseController)
 router.post("/register", registerController)
 
 router.post("/login", loginController)
+
+router.get("/verify-email", verifyEmailController)
+
+router.post("/upload", authMiddleware, upload.single("image"), uploadController)
 
 export default router
